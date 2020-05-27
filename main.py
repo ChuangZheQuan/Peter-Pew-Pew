@@ -1,5 +1,5 @@
 import pygame
-from astar_algo import astar 
+from astar_algo import astar
 import random
 
 pygame.init()
@@ -37,7 +37,7 @@ class player(pygame.sprite.Sprite):
     def draw(self,win):
         if self.moveCount+1>=9:
             self.moveCount=0
-        
+
         if self.left:
             win.blit(walkLeft[self.moveCount//3],(self.rect.x,self.rect.y))
             self.image=walkLeft[self.moveCount//3]
@@ -54,7 +54,7 @@ class player(pygame.sprite.Sprite):
             win.blit(walkDown[self.moveCount//3],(self.rect.x,self.rect.y))
             self.image=walkDown[self.moveCount//3]
             self.moveCount+=1
-        else: 
+        else:
             pass
 
 eWalkRight=[pygame.image.load('img/enemy1-1.tiff'),pygame.image.load('img/enemy1-2.tiff'),pygame.image.load('img/enemy1-3.tiff')]
@@ -95,7 +95,7 @@ class enemy(pygame.sprite.Sprite):
             self.last_move='down'
         else:
             pass
-        
+
         self.gridloc = [self.rect.x//50,self.rect.y//50]
         self.goal_node=[pac.rect.x//50,pac.rect.y//50]
 
@@ -116,12 +116,6 @@ class enemy(pygame.sprite.Sprite):
                 self.moveCount+=1
             else:
                 pass
-                '''if self.image==eWalkRight[self.moveCount//3]:
-                    win.blit(eWalkRight[self.moveCount//3],(self.rect.x,self.rect.y))
-                    self.moveCount+=1
-                else:
-                    win.blit(eWalkLeft[self.moveCount//3],(self.rect.x,self.rect.y))
-                    self.moveCount+=1'''
 
             #draw healthbar
             pygame.draw.rect(win,(255,0,0),(self.hitbox[0],self.hitbox[1]-20,30,10))
@@ -164,14 +158,14 @@ class projectiles():
 
 def collision(surface_1,surface_2):
     """checks for collision between two surfaces. if there is rectangular collision, then checks for mask collision
-    
+
     surface_1 (surface), surface_2 (surface) --> (bool)
     """
     #check if there is rectangular collision
     if surface_1.rect.colliderect(surface_2):
         #check if there is mask collision
         surface_1.mask=pygame.mask.from_surface(surface_1.image)
-        surface_2.mask=pygame.mask.from_surface(surface_2.image)     
+        surface_2.mask=pygame.mask.from_surface(surface_2.image)
         if pygame.sprite.spritecollide(surface_1,[surface_2],False,pygame.sprite.collide_mask):
             return True
     else:
@@ -180,7 +174,7 @@ def collision(surface_1,surface_2):
 
 def astar_ghost(pac,ghost):
     """uses the astar pathfinding algorithm to determine the goal node of the enemy sprite, then assigns
-    booleans to each direction that the sprite can take. checks for collision as well. if there is collision 
+    booleans to each direction that the sprite can take. checks for collision as well. if there is collision
     between the enemy and player, the game variable will be False and the game would be over
 
     pac (player), ghost(enemy) --> (bool)
@@ -204,14 +198,14 @@ def astar_ghost(pac,ghost):
         ghost.right=False
         ghost.up=False
         ghost.down=False
-    
+
     elif ghost.goal_node[0]>ghost.gridloc[0]:#right
         game=collision(pac,ghost)
         ghost.left=False
         ghost.right=True
         ghost.up=False
         ghost.down=False
-        
+
     elif ghost.goal_node[1]<ghost.gridloc[1]:#up
         game=collision(pac,ghost)
         ghost.left=False
@@ -242,6 +236,7 @@ def draw_text(surface,text,size,x,y):
     return
 
 def show_gameover_screen():
+    """show game over screen"""
     draw_text(win,'Game Over!',32,screen_width//2,screen_height//2)
     draw_text(win,'Press any key to play again',24,screen_width//2,screen_height//4*3)
     pygame.display.flip()
@@ -258,6 +253,7 @@ def show_gameover_screen():
     return
 
 def redrawGameWindow():
+    """redraw everything for new frame"""
     win.fill((0,0,0))
     for ghost in ghost_list:
         ghost.draw(win)
@@ -274,7 +270,7 @@ pac.rect.x=8*50
 pac.rect.y=4*50
 pac.vel=6
 
-"""creating enemies"""    
+"""creating starting enemies"""
 ghost1=enemy()
 ghost1.rect.x=15*50
 ghost1.rect.y=4*50
@@ -295,13 +291,13 @@ ghost_list=[]
 ghost_list.append(ghost1)
 ghost_list.append(ghost2)
 
-#Bullets List
+"""Bullets List"""
 bullets=[]
 
-#shootLoop is prevent bullets from sticking too close to each other
+"""shootLoop is prevent bullets from sticking too close to each other"""
 shootLoop=0
 
-#for ghost respawns
+"""for ghost respawns"""
 len_ghost_list=len(ghost_list)
 
 #MAIN LOOP
@@ -310,18 +306,20 @@ game_over=False
 while run:
     if not game_over:
         clock.tick(fps)
-    
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
             else:
                 continue
 
+        """determining difficulty level"""
         if score<100:
             difficulty_level=score//10
         else:
             pass
 
+        """moving bullets"""
         if shootLoop>0:
             shootLoop+=1
         if shootLoop>3:
@@ -336,7 +334,7 @@ while run:
                     except:
                         continue
 
- 
+
             if bullet.x<screen_width and bullet.x>0 and bullet.right:
                 if bullet.back:
                     bullet.x-=bullet.vel
@@ -364,7 +362,8 @@ while run:
                 bullets.pop(bullets.index(bullet))
 
         keys=pygame.key.get_pressed()
- 
+
+
         if keys[pygame.K_SPACE] and shootLoop==0:
             if len(bullets)<max_bullets:
                 if pac.left:
@@ -396,9 +395,10 @@ while run:
 
                 else:
                     bullets.append(projectiles(round(pac.rect.x+pac.rect.width//2),round(pac.rect.y+pac.rect.height//2),left,right,up,down,False))
-                
+
                 shootLoop=1
 
+        """moving player"""
         if keys[pygame.K_LEFT] and pac.rect.x > pac.vel:
             pac.rect.x -= pac.vel
             pac.left=True
@@ -419,7 +419,7 @@ while run:
             pac.down=False
             pac.left=False
             pac.right=False
-            
+
         elif keys[pygame.K_DOWN] and pac.rect.y<screen_height-pac.rect.height-pac.vel:
             pac.rect.y += pac.vel
             pac.up=False
@@ -430,7 +430,7 @@ while run:
         else:
             pac.moveCount=0
 
-        #creating new ghost if one died
+        """creating new ghost if one died"""
         if len(ghost_list)<len_ghost_list:
             for i in range(len_ghost_list-len(ghost_list)):
                 inhabited_x_space=[pac.rect.x//50,pac.rect.x//50+1,pac.rect.x//50-1,pac.rect.x//50+2,pac.rect.x//50-2]
@@ -451,10 +451,11 @@ while run:
                         new_ghost2.goal_node=[(pac.rect.x//50),(pac.rect.y//50)]
                         new_ghost2.gridloc=[new_ghost2.rect.x//50,new_ghost2.rect.y//50]
                         new_ghost2.vel=random.randint(2,4)
-                        ghost_list.append(new_ghost2)                    
-                
+                        ghost_list.append(new_ghost2)
+
         len_ghost_list=len(ghost_list)
 
+        """checking if ghost is dead"""
         for ghost in ghost_list:
             if ghost.health==0:
                 ghost_list.pop(ghost_list.index(ghost))
@@ -465,9 +466,11 @@ while run:
                 break
             ghost.update()
 
+        """redrawing entire window"""
         redrawGameWindow()
-       
+
     else:
+        """Game is over"""
         show_gameover_screen()
         game_over=False
         win.fill((0,0,0))
@@ -477,7 +480,7 @@ while run:
         pac.rect.y=4*50
         pac.vel=5
 
-        # Ghost1    
+        # Ghost1
         ghost1=enemy()
         ghost1.rect.x=15*50
         ghost1.rect.y=4*50
@@ -486,7 +489,6 @@ while run:
         ghost1.vel=1
 
         #Ghost2
-
         ghost2=enemy()
         ghost2.rect.x=1*50
         ghost2.rect.y=4*50
