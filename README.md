@@ -1,11 +1,9 @@
 # Peter Pew Pew
- Game using A* Pathfinding Algorithm
-
 A game using A* Pathfinding Algorithm and PyGame
 
-#![](peterpewpew1.gif)                                               
+![alt-text](peterpewpew1.gif)                                               
 
-#![](peterpewpew2.gif)
+![alt-text](peterpewpew2.gif)
 
 ## Player Instructions
 Required Modules: PyGame 2.0.0.dev6 and Random
